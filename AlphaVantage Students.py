@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
-
 #Enter your wcd here if needed
 
 
@@ -11,13 +5,10 @@
 
 # The first segment will be about installing all necessary packages to run alphavantage as well as important files that you will need througout this script
 
-# In[ ]:
 
 
 pip install alpha_vantage
 
-
-# In[ ]:
 
 
 from alpha_vantage.timeseries import TimeSeries
@@ -71,9 +62,6 @@ comp_list = tickers_list.iloc[:,0]
 
 # This function allows the user to submit a csv file that contains a list of tickers. Alphavnatage does not publish a list of all supported tickers, and therefore I will publish one as they might have their reason. However, this tool will need a time due to the limimtations of alphanatage of 5 calls per minute, but will filter all 'bad' tickers out so that the outcome will be a clean list of functioning tickers. I would repeat this step every time you pull large data sets for all tickers, as tickers change, are discontinued etc. 
 
-# In[ ]:
-
-
 comp_list = list(np.zeros(0))
 
 def data_gath(i,tickers_list,key_list):  
@@ -93,9 +81,6 @@ for i in range(len(tickers_list)):
         print(str(i))
 
 
-# In[ ]:
-
-
 comp_list_pd = pd.DataFrame(comp_list)
 comp_list_pd.to_csv("Full_list.csv")
 
@@ -106,17 +91,13 @@ comp_list_pd.to_csv("Full_list.csv")
 
 # Weekly data pull
 
-# In[ ]:
-
-
 def Stock_pull(df,key_list,columns_1):
     
     df_new = pd.DataFrame(np.zeros([0, len(columns_1)]))
     df_new.columns = columns_1
     df_new['Ticker'] = 0
     
-    #for i in range(len(df)):
-    for i in range(2):
+    for i in range(len(df)):
         time_remaining = (((len(df)-i)*12)/60) 
         print (str(time_remaining) +" Minutes remaining")
         
@@ -136,24 +117,14 @@ def Stock_pull(df,key_list,columns_1):
     
     return df_new
 
-
-# In[ ]:
-
-
 WK = Stock_pull(comp_list,key_list,cc)
-
-
-# In[ ]:
-
-
 WK.to_csv("WK1_df.csv") # save this Raw data file each week as we will later merge 4 weeks into one big file
+
 
 
 # ### Data Merging + Cleaning
 
 # The raw data is not perfect and sometimes is missing data, while this could be for a number of reasons we will 'clean' the data, interpolate values and adjust missing volumes. 
-
-# In[ ]:
 
 
 WK1_df = pd.read_csv("WK1_df.csv") #These are 4 weeks of data that we downloaded and now we will merge them as well as
@@ -161,9 +132,6 @@ WK2_df = pd.read_csv("WK2_df.csv") #clean them to ensure we have accurate data
 WK3_df = pd.read_csv("WK3_df.csv")
 WK4_df = pd.read_csv("WK4_df.csv")
 df_list = [WK1_df,WK2_df,WK3_df,WK4_df]
-
-
-# In[ ]:
 
 
 def Merge(df_list):
@@ -183,13 +151,7 @@ def Merge(df_list):
     return df
 
 
-# In[ ]:
-
-
 WK1_4 = Merge(df_list)   # Merged file that consists of all 4 weeks
-
-
-# In[ ]:
 
 
 def cleaning_arr(pd_df):
@@ -242,22 +204,11 @@ def cleaning_arr(pd_df):
     
     return df
 
-
-# In[ ]:
-
-
 WK1_4_clean = cleaning_arr(WK1_4)  #this calls up the previous function and cleans it 
-
-
-# In[ ]:
-
-
 WK1_4_clean.to_csv('WK1_4_clean.csv')
 
 
 # ### Data Analysis
-
-# In[ ]:
 
 
 def Analysis(pd_df):
